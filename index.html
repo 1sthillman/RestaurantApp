@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restoran Yönetim Sistemi</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Restoran Yönetim Sistemi</h1>
+        
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Müşteri Menü</h5>
+                        <p class="card-text">Müşteri sipariş sayfası için QR kodu kullanın.</p>
+                        <a href="menu.html?masa=1" class="btn btn-primary">Test Menü (Masa 1)</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Mutfak Paneli</h5>
+                        <p class="card-text">Mutfak için sipariş yönetim sayfası.</p>
+                        <a href="kitchen.html" class="btn btn-warning">Mutfak Paneli</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Garson Paneli</h5>
+                        <p class="card-text">Garsonlar için sipariş takip sayfası.</p>
+                        <a href="waiter.html" class="btn btn-success">Garson Paneli</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center mb-4">Masa QR Kodları</h2>
+                <p class="text-center text-muted mb-4">Her masa için QR kodları aşağıdadır. Müşteriler bu QR kodları tarayarak menüye erişebilir.</p>
+            </div>
+        </div>
+        
+        <div class="row" id="qr-codes-container">
+            <div class="text-center py-5">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Yükleniyor...</span>
+                </div>
+                <p class="mt-2">QR Kodlar Yükleniyor...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script>
+        // Load tables and generate QR codes
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Check connection
+                await checkConnection();
+                
+                // Get tables
+                const { data: tables, error } = await supabase
+                    .from('masalar')
+                    .select('*')
+                    .order('masa_no', { ascending: true });
+                
+                if (error) {
+                    console.error('Masalar yüklenemedi:', error);
+                    document.getElementById('qr-codes-container').innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                Masalar yüklenirken bir hata oluştu.
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Generate QR codes for tables
+                let html = '';
+                
+                if (tables && tables.length > 0) {
+                    tables.forEach(table => {
+                        html += `
+                            <div class="col-md-3 col-sm-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header text-center bg-primary text-white">
+                                        <h5 class="mb-0">Masa ${table.masa_no}</h5>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div id="qr-code-${table.masa_no}" class="mb-3"></div>
+                                        <p class="mb-0">
+                                            <span class="badge ${table.durum === 'bos' ? 'bg-success' : 'bg-danger'}">
+                                                ${table.durum === 'bos' ? 'Boş' : 'Dolu'}
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div class="card-footer text-center">
+                                        <a href="menu.html?masa=${table.masa_no}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                            <i class="bi bi-link-45deg"></i> Menüyü Aç
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = `
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                Henüz masa bulunmuyor.
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('qr-codes-container').innerHTML = html;
+                
+                // Generate QR codes
+                tables.forEach(table => {
+                    const url = `${window.location.origin}/menu.html?masa=${table.masa_no}`;
+                    const qrContainer = document.getElementById(`qr-code-${table.masa_no}`);
+                    
+                    QRCode.toCanvas(qrContainer, url, {
+                        width: 128,
+                        margin: 1,
+                        color: {
+                            dark: '#000000',
+                            light: '#ffffff'
+                        }
+                    }, function(error) {
+                        if (error) console.error('QR kod oluşturulamadı:', error);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Hata:', error);
+                document.getElementById('qr-codes-container').innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-danger">
+                            Bir hata oluştu. Lütfen daha sonra tekrar deneyin.
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html> 

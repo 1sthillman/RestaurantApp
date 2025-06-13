@@ -1,0 +1,143 @@
+/* Main Styles */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Card styles */
+.menu-item {
+    transition: transform 0.2s;
+    margin-bottom: 1.5rem;
+}
+
+.menu-item:hover {
+    transform: translateY(-5px);
+}
+
+.menu-item .card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+/* QR Code Styles */
+#qr-codes-container canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Orders container */
+.orders-container {
+    min-height: 200px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.order-card {
+    margin-bottom: 1rem;
+}
+
+.order-card.border-warning {
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.3);
+}
+
+.order-card.border-primary {
+    box-shadow: 0 0 5px rgba(13, 110, 253, 0.3);
+}
+
+.order-card.border-success {
+    box-shadow: 0 0 5px rgba(25, 135, 84, 0.3);
+}
+
+/* Table styles */
+.table-card {
+    height: 100%;
+    transition: all 0.3s;
+}
+
+.table-card .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.table-card.active {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.table-card.busy {
+    background-color: #ffecb3;
+    border-color: #ffc107;
+}
+
+/* Sepet item styles */
+.sepet-item {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.sepet-item:last-child {
+    border-bottom: none;
+}
+
+.sepet-item .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.quantity-control {
+    width: 32px;
+    display: inline-block;
+    text-align: center;
+}
+
+/* Status badges */
+.status-badge {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Order item in cart */
+.order-product-item {
+    font-size: 0.9rem;
+    padding: 0.25rem 0;
+}
+
+/* Menu styles */
+.nav-pills .nav-link {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: #495057;
+    background-color: #e9ecef;
+}
+
+.nav-pills .nav-link.active {
+    color: #fff;
+    background-color: #0d6efd;
+}
+
+/* Fixed cart indicator at bottom */
+.cart-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .menu-item .card-img-top {
+        height: 140px;
+    }
+    
+    .menu-item .card-footer .btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .nav-pills .nav-link {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+} 
